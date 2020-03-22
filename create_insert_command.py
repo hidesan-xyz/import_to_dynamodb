@@ -16,13 +16,13 @@ else:
 
 now_date = datetime.datetime.today().strftime("%Y%m%d%H%M%S")
 template = 'aws dynamodb put-item --table-name ' + new_table_name + ' --item'
-csv_input = pd.read_csv(old_table_name + '.csv', dtype="str")
+csv_input = pd.read_csv(old_table_name + '.csv', encoding='cp932', dtype="str")
 
 for index, row in csv_input.iterrows():
     item_content = ''
     for i in range(len(row)):
         if type(row[i]) is str:
-            item_content = item_content + '"' + row.index[i].split(' ')[0] + '" : { "' + row.index[i].split(' ')[1].strip('\(''\)') + '" : "' + str(row[i]) + '" }, '
+            item_content = item_content + '"' + row.index[i].split(' ')[0] + '" : { "' + row.index[i].split(' ')[1].strip('\(''\)') + '" : "' + str(row[i]).replace('\n','\\r\\n') + '" }, '
     item_content = ' \'{ ' + item_content.rstrip(', ') + ' }\''
     print(str(index+1) + ' line')
     with open(new_table_name + '_import_' + now_date +'.sh', 'a') as f:
